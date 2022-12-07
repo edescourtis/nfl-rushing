@@ -1,0 +1,16 @@
+version: "3.1"
+services:
+  postgres:
+    image: postgis/postgis:12-master
+    ports:
+      - 0.0.0.0:5432:5432
+    environment:
+      - POSTGRES_DB=nfl_rushing_dev
+      # - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data/:delegated
+volumes:
+  pgdata:
+
