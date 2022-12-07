@@ -54,4 +54,32 @@ We will evaluate you on your ability to solve the problem defined in the require
 If you have any questions regarding requirements, do not hesitate to email your contact at theScore for clarification.
 
 ### Installation and running this solution
-... TODO
+```
+# Step 0: Mac or Ubuntu instructions (only needed if rushing.json changes)
+# NOTE: This is done because parsing large JSON files does not scale. The parsers
+#       cannot return stream of objects. To get around this we use ndjson.
+#       See http://ndjson.org/
+brew install jq || sudo apt install jq
+chmod +x ./convert_to_ndjson
+./convert_to_ndjson.sh ./rushing.json ./priv/rushing.ndjson
+
+# Step 1: Install dependencies and compile
+mix deps.get
+mix deps.compile
+
+# Step 2: Start Postgres and wait 10s
+docker-compose up -d
+
+# Step 3: Create DB
+mix ecto.setup
+
+# Step 4: Compile and deploy assets
+mix assets.deploy
+
+# Step 5: Start the server
+iex -S mix phx.server
+
+# Step 6: Load in rushing data from Elixir shell
+NflRushing.Football.PlayerImport.load_ndjson!()
+
+```
