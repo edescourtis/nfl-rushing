@@ -20,8 +20,6 @@ defmodule NflRushingWeb.Router do
     get "/", PageController, :index
   end
 
-
-
   # Other scopes may use custom stacks.
   scope "/api/football", NflRushingWeb do
     pipe_through :api

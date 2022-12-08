@@ -27,7 +27,41 @@ defmodule NflRushing.Football.Player do
   @doc false
   def changeset(player, attrs) do
     player
-    |> cast(attrs, [:name, :team, :position, :rushing_attempts_per_game_average, :rushing_attempts, :total_rushing_yards, :rushing_average_yards_per_attempt, :rushing_yards_per_game, :total_rushing_touchdowns, :longest_rush, :longest_rush_touchdown, :rushing_first_downs, :rushing_first_down_percentage, :rushing_20plus_yards_each, :rushing_40plus_yards_each, :rushing_fumbles])
-    |> validate_required([:name, :team, :position, :rushing_attempts_per_game_average, :rushing_attempts, :total_rushing_yards, :rushing_average_yards_per_attempt, :rushing_yards_per_game, :total_rushing_touchdowns, :longest_rush, :longest_rush_touchdown, :rushing_first_downs, :rushing_first_down_percentage, :rushing_20plus_yards_each, :rushing_40plus_yards_each, :rushing_fumbles])
+    |> cast(attrs, [
+      :name,
+      :team,
+      :position,
+      :rushing_attempts_per_game_average,
+      :rushing_attempts,
+      :total_rushing_yards,
+      :rushing_average_yards_per_attempt,
+      :rushing_yards_per_game,
+      :total_rushing_touchdowns,
+      :longest_rush,
+      :longest_rush_touchdown,
+      :rushing_first_downs,
+      :rushing_first_down_percentage,
+      :rushing_20plus_yards_each,
+      :rushing_40plus_yards_each,
+      :rushing_fumbles
+    ])
+    |> validate_required([
+      :name,
+      :team,
+      :position,
+      :rushing_attempts_per_game_average,
+      :rushing_attempts,
+      :total_rushing_yards,
+      :rushing_average_yards_per_attempt,
+      :rushing_yards_per_game,
+      :total_rushing_touchdowns,
+      :longest_rush,
+      :longest_rush_touchdown,
+      :rushing_first_downs,
+      :rushing_first_down_percentage,
+      :rushing_20plus_yards_each,
+      :rushing_40plus_yards_each,
+      :rushing_fumbles
+    ])
   end
 end

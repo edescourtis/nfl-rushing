@@ -1,5 +1,8 @@
 import React from "react";
+
+const PAGE_SIZE_DEFAULT = 50;
 interface FootballPlayer {
+    id: any,
     name: string,
     team: string,
     position: string,
@@ -22,26 +25,31 @@ interface FootballPlayerTableProps {
 }
 interface FootballPlayerTableState {
     players: Array<FootballPlayer>;
-    page: number;
-    total_rushing_yards: string | null;
-    longest_rush: string | null;
-    total_rushing_touchdowns: string | null;
+    order_by: string;
+    before: any;
+    after: any;
+    limit: number;
 }
 
 class FootballPlayerTable extends React.Component<FootballPlayerTableProps, FootballPlayerTableState>{
     state: FootballPlayerTableState = {
         players: [],
-        page: 1,
-        total_rushing_yards: null,
-        longest_rush: null,
-        total_rushing_touchdowns: null
+        order_by: 'id',
+        before: null,
+        after: null,
+        limit: PAGE_SIZE_DEFAULT
     };
 
     componentDidMount() {
+        this.fetchPage('after');
+    }
+
+    fetchPage(direction: string) {
         let params: any = {
-            total_rushing_yards: this.state.total_rushing_yards,
-            longest_rush: this.state.longest_rush,
-            total_rushing_touchdowns: this.state.total_rushing_touchdowns
+            order_by: this.state.order_by,
+            after: (direction === 'after') ? this.state.after : null,
+            before: (direction === 'before') ? this.state.before : null,
+            limit: this.state.limit,
         };
 
         Object.keys(params).forEach(key => {
@@ -58,30 +66,55 @@ class FootballPlayerTable extends React.Component<FootballPlayerTableProps, Foot
 
         fetch(url).then((res) => {
             return res.json();
-        }).then((players) => {
-            //console.log(players);
-            //players = players.slice(0, 6);
+        }).then(({data: players, meta: meta}) => {
             this.setState({players});
-        }); 
+            this.setState({after: meta.after});
+            this.setState({before: meta.before});
+        });
     }
 
     render() {
+        console.log(this.state);
         return (
             <div>
-                <button onClick={() => this.setState({page: Math.max(this.state.page - 1, 1) })}>Prev</button>
-                <button onClick={() => this.setState({page: Math.min(this.state.page + 1, Math.floor(this.state.players.length / 6))})}>Next</button>
+                <button onClick={
+                    () => {
+                        if(!this.state.before) return;
+                        this.fetchPage('before');
+                    }}>Prev</button>
+                <button onClick={
+                    () => {
+                        if(!this.state.after) return;
+                        this.fetchPage('after');
+                    }}>Next</button>
                 <table>
+                    <thead>
                     <tr>
                         <th>Name</th>
                         <th>Team</th>
                         <th>Pos</th>
                         <th>Att/G</th>
                         <th>Attempts</th>
-                        <th onClick={() => this.setState({total_rushing_yards: (this.state.total_rushing_yards == 'desc') ? 'asc' : 'desc'})}>Yards</th>
+                        <th onClick={() => {
+                            this.state.order_by = 'total_rushing_yards';
+                            this.state.after = null;
+                            this.state.before = null;
+                            this.fetchPage('after');
+                        }}>Yards</th>
                         <th>Avg</th>
                         <th>Yds/G</th>
-                        <th>TD</th>
-                        <th>Lng</th>
+                        <th onClick={() => {
+                            this.state.order_by = 'total_rushing_touchdowns';
+                            this.state.after = null;
+                            this.state.before = null;
+                            this.fetchPage('after');
+                        }}>TD</th>
+                        <th onClick={() => {
+                            this.state.order_by = 'longest_rush';
+                            this.state.after = null;
+                            this.state.before = null;
+                            this.fetchPage('after');
+                        }}>Lng</th>
                         <th>Touchdown?</th>
                         <th>1st</th>
                         <th>1st%</th>
@@ -89,9 +122,11 @@ class FootballPlayerTable extends React.Component<FootballPlayerTableProps, Foot
                         <th>40+</th>
                         <th>FUM</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     {
-                        this.state.players.slice(6 * (this.state.page - 1), 6 * (this.state.page)).map((player) => {
-                        return (<tr>
+                        this.state.players.map((player) => {
+                        return (<tr key={player.id}>
                             <td>{player.name}</td>
                             <td>{player.team}</td>
                             <td>{player.position}</td>
@@ -110,6 +145,7 @@ class FootballPlayerTable extends React.Component<FootballPlayerTableProps, Foot
                             <td>{player.rushing_fumbles}</td>
                         </tr>);
                     })}
+                    </tbody>
                 </table>
             </div>
         );

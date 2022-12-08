@@ -4,6 +4,7 @@ defmodule NflRushing.Application do
   @moduledoc false
 
   use Application
+  import Cachex.Spec
 
   @impl true
   def start(_type, _args) do
@@ -15,9 +16,33 @@ defmodule NflRushing.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: NflRushing.PubSub},
       # Start the Endpoint (http/https)
-      NflRushingWeb.Endpoint
+      NflRushingWeb.Endpoint,
       # Start a worker by calling: NflRushing.Worker.start_link(arg)
       # {NflRushing.Worker, arg}
+      %{
+        id: NflRushing.Football.PlayerRepo.get_football_players_pagination_cache(),
+        start:
+          {Cachex, :start_link,
+           [
+             NflRushing.Football.PlayerRepo.get_football_players_pagination_cache(),
+             [
+               limit:
+                 limit(
+                   size: 10_000,
+                   policy: Cachex.Policy.LRW,
+                   # Reclaim 10% when hitting the cache limit
+                   reclaim: 0.10
+                 ),
+               expiration:
+                 expiration(
+                   # how ofter Janitor runs
+                   interval: :timer.seconds(15)
+                 ),
+               # Additional overhead not needed
+               stats: false
+             ]
+           ]}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

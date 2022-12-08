@@ -3,6 +3,5 @@ defmodule NflRushing.Repo do
     otp_app: :nfl_rushing,
     adapter: Ecto.Adapters.Postgres
 
-  
-
+  use Paginator
 end

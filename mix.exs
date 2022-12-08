@@ -20,7 +20,7 @@ defmodule NflRushing.MixProject do
   def application do
     [
       mod: {NflRushing.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon]
+      extra_applications: [:logger, :runtime_tools, :os_mon, :cachex_memoize]
     ]
   end
 
@@ -50,6 +50,9 @@ defmodule NflRushing.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:paginator, "~> 1.2"},
+      {:cachex, "~> 3.4"},
+      {:cachex_memoize, "~> 0.1.0"}
     ]
   end
 
